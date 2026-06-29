@@ -8,9 +8,8 @@ let score = 0;
 let timerId = 0;
 let intervalTime = 200;
 function createBoard(){    
-    for(let i = 0;i<400;i==){
+    for(let i = 0;i<400;i++){
         let square = document.createElement('div');
-        let squareChild[];
         grid.appendChild(square);
         squares.push(square);
     }
