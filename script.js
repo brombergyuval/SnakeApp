@@ -7,6 +7,29 @@ let appleIndex = 0;
 let score = 0;
 let timerId = 20;
 let intervalTime = 200;
+
+let endScreen = document.getElementById('endScreen');
+let end = document.getElementById('end');
+
+let bgMusic = new Audio('assets/music.mp3');
+let eatMusic = new Audio('assets/eat.mp3');
+let GameOverMusic = new Audio('assets/game over.mp3')
+
+function PlayBgMusic(){
+    bgMusic.play();
+}
+
+function PlayEatSound(){
+    eatMusic.currentTime = 0;
+    eatMusic.play();
+}
+
+function PlayGameOverSound(){
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    GameOverMusic.play();
+}
+
 function createBoard(){    
     for(let i = 0;i<400;i++){
         let square = document.createElement('div');
@@ -16,8 +39,11 @@ function createBoard(){
 }
 createBoard();
 function startGame(){
+    end.innerText = ""
     currentSnake.forEach(index => squares[index].classList.remove('snake'));
     squares[appleIndex].classList.remove('apple');
+    document.getElementById("endScreen").className = "hidden";
+    PlayBgMusic();
     clearInterval(timerId);
     currentSnake = [2,1,0];
     score = 0; direction = 1; intervalTime = 200;
@@ -27,6 +53,9 @@ function startGame(){
     timerId = setInterval(move, intervalTime);
 }
 function endGame() {
+    document.getElementById("endScreen").className = "visible";
+
+    PlayGameOverSound();
     return clearInterval(timerId);
 }
 function handleSwipe(){
@@ -55,7 +84,7 @@ function move(){
     let hitLeft = (currentSnake[0] % 20 === 0 && direction === -1);
     let hitSelf = squares[currentSnake[0] + direction]?.classList.contains('snake');
     if (hitBottom|| hitLeft || hitRight || hitTop || hitSelf){
-        return endGame;
+        return endGame();
     }
     let tail = currentSnake.pop();
     let newHead = currentSnake[0] + direction;
@@ -65,6 +94,7 @@ function move(){
 
     if (squares[newHead].classList.contains('apple')){
         squares[appleIndex].classList.remove('apple');
+        PlayEatSound()
         squares[tail].classList.add('snake');
         currentSnake.push(tail);
         score++; scoreDisplay.textContent = score;
@@ -103,4 +133,3 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') changeDir(-1);
     if (e.key === 'ArrowRight') changeDir(1);
 })
-
