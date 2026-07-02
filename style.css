@@ -87,12 +87,15 @@ cursor: pointer;}
 
 .visible {
   background-size: cover;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
   transform: scale(200);
   height: 0.15vh;
   width: 0.15vh;
   position: relative;
-  top: 260px;
-  left: 195px;
+  top: 29vh;
+  left: 20.5vh;
   background-image: url("assets/endscreen.png");
 }
 
