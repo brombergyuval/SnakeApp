@@ -7,6 +7,8 @@ let appleIndex = 0;
 let score = 0;
 let timerId = 20;
 let intervalTime = 200;
+let isDirectionChanged = false;
+
 
 let endScreen = document.getElementById('endScreen');
 let end = document.getElementById('end');
@@ -45,6 +47,7 @@ function startGame(){
     document.getElementById("endScreen").className = "hidden";
     PlayBgMusic();
     clearInterval(timerId);
+    clearInterval(intervalTime);
     currentSnake = [2,1,0];
     score = 0; direction = 1; intervalTime = 200;
     scoreDisplay.textContent = score;
@@ -67,8 +70,8 @@ function handleSwipe(){
 
     if (Math.max(absDx,absDy)>30){
         if (absDx > absDy){
-            if (dx>0) changeDir(-1);
-            else changeDir(1);
+            if (dx>0) changeDir(1);
+            else changeDir(-1);
         } else{
             if (dy>0) changeDir(20);
             else changeDir(-20);
@@ -77,6 +80,7 @@ function handleSwipe(){
 }
 function move(){
 
+    isDirectionChanged = false;
     //בדיקת פסילה
     let hitBottom = (currentSnake[0] + 20 >= 400 && direction === 20);
     let hitTop = (currentSnake[0] - 20 < 0 && direction === -20);
@@ -94,25 +98,31 @@ function move(){
 
     if (squares[newHead].classList.contains('apple')){
         squares[appleIndex].classList.remove('apple');
-        PlayEatSound()
+        PlayEatSound();
         squares[tail].classList.add('snake');
         currentSnake.push(tail);
         score++; scoreDisplay.textContent = score;
+        clearInterval(timerId);
+
+        intervalTime = intervalTime-5;
+        if (intervalTime<50){
+            intervalTime = 50;
+        }
+        timerId =setInterval(move,intervalTime);
         generateApple();
     }
-    document.addEventListener('touchstart', a => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    },false);
-
-    document.addEventListener('touchend', a => {
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe()
-    },false);
-
-   
 }
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+},false);
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+},false);
+
 function generateApple(){
     do {
         appleIndex = Math.floor(Math.random() * squares.length);
@@ -121,9 +131,10 @@ function generateApple(){
 }
 //שינוי כיוון
 function changeDir(newDir){
-    //מניעת פניית פרסה
-    if (direction + newDir !== 0){;
+    // מניעת פניית פרסה
+    if (!isDirectionChanged && direction + newDir !== 0){
         direction = newDir;
+        isDirectionChanged = true;
     }
 }
 //חצים במחשב
