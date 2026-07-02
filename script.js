@@ -144,3 +144,10 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') changeDir(-1);
     if (e.key === 'ArrowRight') changeDir(1);
 })
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker registered successfully!', reg))
+      .catch(err => console.log('Service Worker registration failed:', err));
+  });
+}
